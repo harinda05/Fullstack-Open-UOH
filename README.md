@@ -1,2 +1,2 @@
 # Fullstack-Open-UOH
-coursework submission for fullstackopen course
+coursework submissions for fullstackopen course
