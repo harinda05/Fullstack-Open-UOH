@@ -4,7 +4,7 @@ const PhonebookEntry = (props) => {
         {props.persons
         .filter(person => person.name.toLowerCase().includes(props.filterString.toLowerCase()))
         .map((person) =>
-            <Person key={`${person.name}`} name={person.name} phoneNo={person.phoneNo}/>)
+            <Person key={`${person.name}`} name={person.name} phoneNo={person.number}/>)
         }</>
 }
 
