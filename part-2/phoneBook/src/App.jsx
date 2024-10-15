@@ -2,16 +2,24 @@ import { useEffect, useState } from 'react'
 import PhonebookEntry from './components/PhonebookEntry'
 import SearchFilter from './components/SearchFilter'
 import PersonForm from './components/PersonForm'
-import axios from 'axios'
 import entryService from './services/entryService'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhoneNo, setNewNo] = useState('')
   const [newFilterString, setNewFilterString] = useState('')
+  const [notificationMsg, setNotification] = useState(null)
+  const [notificationType, setNotificationType] = useState('success')
 
+  // set notification to null
 
+  const setNotificationNull = () => {
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
 
   // Add new phonebook entry
 
@@ -41,8 +49,11 @@ const App = () => {
     } else {
       entryService
         .create(nameObject)
-        .then(returnedObject => {
-          setPersons(persons.concat(returnedObject))
+        .then(responseItem => {
+          setPersons(persons.concat(responseItem))
+          setNotification(`Added ${responseItem.name}`)
+          setNotificationType('success')
+          setNotificationNull()
         })
     }
   }
@@ -66,6 +77,8 @@ const App = () => {
       .deleteEntry(event.target.id)
       .then(responseItem => {
         setPersons(persons.filter(person => person.id !== responseItem.id))
+        setNotification(`Deleted ${responseItem.name}`)
+        setNotificationNull()
       })
     }
   }
@@ -77,6 +90,13 @@ const App = () => {
       .update(id, newObject)
       .then(responseItem => {
         setPersons(persons.map(person => person.id !== id ? person : responseItem))
+        setNotification(`Updated ${responseItem.name}`)
+        setNotificationNull()
+      }).catch(error => {
+        console.log('in error..............')
+        setNotification(`Information of '${newObject.name}' has already been removed from server`)
+        setNotificationType('failure')
+        setNotificationNull()
       })
   }
 
@@ -109,6 +129,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMsg} type={notificationType}/>
       <SearchFilter filter={handleSearchFilter}/>
       <h2>Add a new </h2>
       <PersonForm onSubmit={addEntry} onNameChange={handleNameChange} onPhonenoChange={handlePhoneNumberChange}/>
