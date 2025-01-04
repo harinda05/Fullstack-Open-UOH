@@ -92,7 +92,7 @@ const App = () => {
         setPersons(persons.map(person => person.id !== id ? person : responseItem))
         setNotification(`Updated ${responseItem.name}`)
         setNotificationNull()
-      }).catch(error => {
+      }).catch(() => {
         console.log('in error..............')
         setNotification(`Information of '${newObject.name}' has already been removed from server`)
         setNotificationType('failure')
