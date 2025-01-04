@@ -133,6 +133,30 @@ describe('Blog API Tests', () => {
             .expect('Content-Type', /application\/json/);
       });
 
+
+      test.only('deletes a blog', async () => {
+        const blogsAtStart = await Blog.find({});
+        const blogToDelete = blogsAtStart[0];
+      
+        const response = await api
+          .delete(`/api/blogs/${blogToDelete.id}`)
+          .expect(204);
+      
+        const currentBlogs = await Blog.find({});
+        const deletedBlog = currentBlogs.find(blog => blog.id === blogToDelete.id);
+        assert.strictEqual(deletedBlog, undefined);
+      });
+      
+      test('returns 404 if blog does not exist', async () => {
+        const nonExistentId = "34235346";
+        
+        const response = await api
+          .delete(`/api/blogs/${nonExistentId}`)
+          .expect(404);
+      
+        assert.strictEqual(response.body.error, 'Invalid blog id');
+      });
+
     after(async () => {
         await mongoose.connection.close()
     })
