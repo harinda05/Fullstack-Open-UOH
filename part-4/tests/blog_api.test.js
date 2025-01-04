@@ -46,7 +46,7 @@ describe('Blog API Tests', () => {
         }
 
     })
-
+    
 
     test('blogs are returned as json and the correct amount', async () => {
         const response = await api
@@ -138,7 +138,7 @@ describe('Blog API Tests', () => {
         const blogsAtStart = await Blog.find({});
         const blogToDelete = blogsAtStart[0];
       
-        const response = await api
+        await api
           .delete(`/api/blogs/${blogToDelete.id}`)
           .expect(204);
       
