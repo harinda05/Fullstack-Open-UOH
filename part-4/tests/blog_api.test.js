@@ -108,6 +108,32 @@ describe('Blog API Tests', () => {
         assert.strictEqual(response.body.likes, 0);
       });
 
+      test('responds with 400 if title or url is missing', async () => {
+        // title missing
+        const newBlog = {
+          author: 'Test Author',
+          url: 'http://example.com/test-blog'
+        };
+      
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+
+          // url missing
+          const newBlog2 = {
+            title: 'Test Blog without url',
+            author: 'Test Author'
+          };
+        
+          await api
+            .post('/api/blogs')
+            .send(newBlog2)
+            .expect(400)
+            .expect('Content-Type', /application\/json/);
+      });
+
     after(async () => {
         await mongoose.connection.close()
     })

@@ -10,6 +10,11 @@ blogsRouter.get('/', async (req, res) => {
 
 blogsRouter.post('/', async (req, res) => {
   const { title, author, url, likes } = req.body;
+
+  if (!title || !url) {
+    return res.status(400).json({ error: 'missing required values' });
+  }
+
   const blog = new Blog({
     title,
     author,
