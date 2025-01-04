@@ -161,6 +161,21 @@ describe('Blog API Tests', () => {
         await mongoose.connection.close()
     })
 
+
+    test('updates the number of likes of a blog post', async () => {
+        const blogToUpdate = await Blog.findOne();
+      
+        const updatedLikes = 100;
+      
+        const response = await api
+          .put(`/api/blogs/${blogToUpdate.id}`)
+          .send({ likes: updatedLikes })
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+      
+        assert.strictEqual(response.body.likes, updatedLikes);
+      });
+
 })
 
 const getBlogCount = async () => {
