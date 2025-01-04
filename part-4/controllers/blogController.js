@@ -3,10 +3,14 @@ const Blog = require('../models/blog')
 
 const blogsRouter = express.Router()
 
-blogsRouter.get('/', async (req, res) => {
-  const blogs = await Blog.find({})
-  res.json(blogs)
-})
+blogsRouter.get('/api/blogs', async (req, res) => {
+  try {
+    const blogs = await Blog.find({});
+    res.json(blogs);
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 
 blogsRouter.post('/', async (req, res) => {
   const { title, author, url, likes } = req.body;

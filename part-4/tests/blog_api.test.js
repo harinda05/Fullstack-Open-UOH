@@ -62,7 +62,6 @@ describe('Blog API Tests', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/);
 
-        // Ensure every blog has an id property
         response.body.forEach((blog) => {
             assert(blog.id, 'Err: Blog missing id property');
             assert(!blog._id, 'Err: Blog still has _id property');
