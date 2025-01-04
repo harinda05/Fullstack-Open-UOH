@@ -55,6 +55,12 @@ const App = () => {
           setNotificationType('success')
           setNotificationNull()
         })
+        .catch(error => {
+          console.log(error.response.data.error)
+          setNotification(` ${error.response.data.error}`)
+          setNotificationType('failure')
+          setNotificationNull()
+        });
     }
   }
 
@@ -91,12 +97,13 @@ const App = () => {
       .then(responseItem => {
         setPersons(persons.map(person => person.id !== id ? person : responseItem))
         setNotification(`Updated ${responseItem.name}`)
+        setNotificationType('success')
         setNotificationNull()
       }).catch(error => {
-        console.log('in error..............')
-        setNotification(`Information of '${newObject.name}' has already been removed from server`)
-        setNotificationType('failure')
-        setNotificationNull()
+        console.log(error.response.data.error)
+          setNotification(` ${error.response.data.error}`)
+          setNotificationType('failure')
+          setNotificationNull()
       })
   }
 
