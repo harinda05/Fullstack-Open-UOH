@@ -114,3 +114,21 @@ describe('mostBlogs', () => {
         assert.strictEqual(result.blogs, 1);
     });
 });
+
+describe('mostBlogs', () => {
+    test('only one blog is provided', () => {
+        const blogs = [
+            sample_blogs_3[0]
+        ];
+        const result = listHelper.mostLikes(blogs);
+        assert.deepStrictEqual(result, { author: 'Michael Chan', likes: 7});
+    });
+
+    test('multiple authors with different like counts', () => {
+        const blogs = sample_blogs_3
+        blogs.concat()
+
+        const result = listHelper.mostLikes(blogs);
+        assert.deepStrictEqual(result, { author: 'Edsger W. Dijkstra', likes: 17 });
+    });
+});
