@@ -70,7 +70,7 @@ describe('Blog API Tests', () => {
     });
 
 
-    test('POST /api/blogs successfully creates a new blog', async () => {
+    test('successfully creates a new blog', async () => {
         const newBlog = {
             _id: "5a422bc61b54a676234d17fc",
             title: "Type wars",
@@ -91,6 +91,22 @@ describe('Blog API Tests', () => {
         const finalCount = await getBlogCount()
         assert.strictEqual(finalCount, initialCount + 1);
     });
+
+    test('test set likes to 0 if missing', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'ABC Author',
+          url: 'http://abc.com/test-blog'
+        };
+      
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(201)
+          .expect('Content-Type', /application\/json/);
+      
+        assert.strictEqual(response.body.likes, 0);
+      });
 
     after(async () => {
         await mongoose.connection.close()
