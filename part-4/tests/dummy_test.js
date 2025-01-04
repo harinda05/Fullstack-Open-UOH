@@ -88,3 +88,29 @@ describe('favoriteBlog', () => {
         assert.deepStrictEqual(result, { title: 'Canonical string reduction', author: 'Edsger W. Dijkstra', likes: 12 });
     });
 });
+
+describe('mostBlogs', () => {
+    test('only one blog is provided', () => {
+        const blogs = [
+            sample_blogs_3[0]
+        ];
+        const result = listHelper.mostBlogs(blogs);
+        assert.deepStrictEqual(result, { author: 'Michael Chan', blogs: 1 });
+    });
+
+    test('multiple authors with different blog counts', () => {
+        const blogs = sample_blogs_3
+        blogs.concat()
+
+        const result = listHelper.mostBlogs(blogs);
+        assert.deepStrictEqual(result, { author: 'Edsger W. Dijkstra', blogs: 2 });
+    });
+
+    test('multiple authors with the same number of blogs', () => {
+        const blogs = [
+            sample_blogs_3[0], sample_blogs_3[1]
+        ];
+        const result = listHelper.mostBlogs(blogs);
+        assert.strictEqual(result.blogs, 1);
+    });
+});
