@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -33,40 +33,72 @@ const initial_blogs = [{
 }]
 
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
-    console.log('cleared')
+describe('Blog API Tests', () => {
 
-    for (let blog of initial_blogs) {
-        let blogObj = new Blog(blog)
-        await blogObj.save()
-        console.log('saved')
-    }
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+        console.log('cleared')
 
-})
+        for (let blog of initial_blogs) {
+            let blogObj = new Blog(blog)
+            await blogObj.save()
+            console.log('saved')
+        }
+
+    })
 
 
-test('blogs are returned as json and the correct amount', async () => {
-  const response = await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
-    assert.strictEqual(response.body.length, initial_blogs.length)
-});
-
-test('blog posts replaced _id with id', async () => {
-    const response = await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/);
-  
-    // Ensure every blog has an id property
-    response.body.forEach((blog) => {
-        assert(blog.id, 'Err: Blog missing id property'); 
-        assert(!blog._id, 'Err: Blog still has _id property');
+    test('blogs are returned as json and the correct amount', async () => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
+        assert.strictEqual(response.body.length, initial_blogs.length)
     });
-  });
 
-after(async () => {
-    await mongoose.connection.close()
+    test('blog posts replaced _id with id', async () => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
+
+        // Ensure every blog has an id property
+        response.body.forEach((blog) => {
+            assert(blog.id, 'Err: Blog missing id property');
+            assert(!blog._id, 'Err: Blog still has _id property');
+        });
+    });
+
+
+    test('POST /api/blogs successfully creates a new blog', async () => {
+        const newBlog = {
+            _id: "5a422bc61b54a676234d17fc",
+            title: "Type wars",
+            author: "Robert C. Martin",
+            url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+            likes: 2,
+            __v: 0
+        }
+
+        const initialCount = await getBlogCount()
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+
+        const finalCount = await getBlogCount()
+        assert.strictEqual(finalCount, initialCount + 1);
+    });
+
+    after(async () => {
+        await mongoose.connection.close()
+    })
+
 })
+
+const getBlogCount = async () => {
+    const blogs = await Blog.find({});
+    return blogs.length;
+};
