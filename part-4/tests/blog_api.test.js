@@ -46,13 +46,26 @@ beforeEach(async () => {
 })
 
 
-test.only('blogs are returned as json and the correct amount', async () => {
+test('blogs are returned as json and the correct amount', async () => {
   const response = await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/);
     assert.strictEqual(response.body.length, initial_blogs.length)
 });
+
+test('blog posts replaced _id with id', async () => {
+    const response = await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  
+    // Ensure every blog has an id property
+    response.body.forEach((blog) => {
+        assert(blog.id, 'Err: Blog missing id property'); 
+        assert(!blog._id, 'Err: Blog still has _id property');
+    });
+  });
 
 after(async () => {
     await mongoose.connection.close()
