@@ -2,9 +2,12 @@ const express = require('express')
 const Blog = require('../models/blog')
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
-
+const tokenExtractor = require('../handlers/tokenExtractor')
 
 const blogsRouter = express.Router()
+
+blogsRouter.use(tokenExtractor)
+
 
 blogsRouter.get('/', async (req, res) => {
   try {
@@ -22,17 +25,10 @@ blogsRouter.post('/', async (req, res, next) => {
     return res.status(400).json({ error: 'missing required values' });
   }
 
-  const token = getTokenFrom(req);
-  console.log(token)
-
-  if (!token) {
-    return response.status(401).json({ error: 'Token missing or invalid' });
-  }
-
   try {
     console.log("decoding token")
 
-    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
     console.log(decodedToken)
 
     if (!decodedToken.id) {
@@ -97,13 +93,5 @@ blogsRouter.put('/:id', async (req, res) => {
     res.status(400).json({ error: 'Invalid blog id' });
   }
 });
-
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
-  }
-  return null
-}
 
 module.exports = blogsRouter
