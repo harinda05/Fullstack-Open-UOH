@@ -3,6 +3,7 @@ const Blog = require('../models/blog')
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const tokenExtractor = require('../handlers/tokenExtractor')
+const userExtractor = require('../handlers/userExtractor')
 
 const blogsRouter = express.Router()
 
@@ -18,7 +19,7 @@ blogsRouter.get('/', async (req, res) => {
   }
 });
 
-blogsRouter.post('/', async (req, res, next) => {
+blogsRouter.post('/', userExtractor, async (req, res, next) => {
   const { title, author, url, likes } = req.body;
 
   if (!title || !url) {
@@ -48,21 +49,25 @@ blogsRouter.post('/', async (req, res, next) => {
   }
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id',userExtractor, async (req, res) => {
   const { id } = req.params;
-
+  console.log("id: ", id)
   try {
     const user = req.user;
     const blog = await Blog.findById(id)
+    console.log("blog: ", blog)
+
     if (!blog) {
       return res.status(404).json({ error: 'Blog not found' });
     }
 
+    
     if (blog.user.toString() !== user.id.toString()) {
       return res.status(403).json({ error: 'only the creator can delete this blog' })
     }
 
     await Blog.findByIdAndDelete(id)
+    console.log("done: ", id)
     res.status(204).end()
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
