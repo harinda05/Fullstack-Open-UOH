@@ -44,7 +44,7 @@ usersRouter.post('/', async (request, response, next) => {
 
 usersRouter.get('/', async (request, response) => {
     try {
-      const users = await User.find({}).populate('blogs')
+      const users = await User.find({}).populate('blogs', '-user')
       response.status(200).json(users);
     } catch (error) {
       response.status(500).json({ error: 'Failed to fetch users' });
