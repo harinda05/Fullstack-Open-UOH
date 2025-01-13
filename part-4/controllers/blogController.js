@@ -1,32 +1,61 @@
 const express = require('express')
 const Blog = require('../models/blog')
+const User = require('../models/user');
+const jwt = require('jsonwebtoken')
+
 
 const blogsRouter = express.Router()
 
 blogsRouter.get('/', async (req, res) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = (await Blog.find({}).populate('user', '-blogs'));
     res.json(blogs);
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
 
-blogsRouter.post('/', async (req, res) => {
+blogsRouter.post('/', async (req, res, next) => {
   const { title, author, url, likes } = req.body;
 
   if (!title || !url) {
     return res.status(400).json({ error: 'missing required values' });
   }
 
-  const blog = new Blog({
-    title,
-    author,
-    url,
-    likes: likes !== undefined ? likes : 0
-  })
-  const savedBlog = await blog.save()
-  res.status(201).json(savedBlog)
+  const token = getTokenFrom(req);
+  console.log(token)
+
+  if (!token) {
+    return response.status(401).json({ error: 'Token missing or invalid' });
+  }
+
+  try {
+    console.log("decoding token")
+
+    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+    console.log(decodedToken)
+
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
+
+    const blog = new Blog({
+      title,
+      author,
+      url,
+      likes: likes !== undefined ? likes : 0,
+      user: user._id
+    })
+    const savedBlog = await blog.save()
+
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+    
+    res.status(201).json(savedBlog)
+  } catch (error) {
+    next(error);
+  }
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
@@ -37,7 +66,7 @@ blogsRouter.delete('/:id', async (req, res) => {
     if (!blog) {
       return res.status(404).json({ error: 'Blog not found' });
     }
-    res.status(204).end(); 
+    res.status(204).end();
   } catch (error) {
     res.status(404).json({ error: 'Invalid blog id' });
   }
@@ -69,5 +98,12 @@ blogsRouter.put('/:id', async (req, res) => {
   }
 });
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 module.exports = blogsRouter
