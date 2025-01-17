@@ -21,7 +21,18 @@ const getToken = async () => {
         .send(newUser)
         .expect(201)
         .expect('Content-Type', /application\/json/);
-    const token = response.body.token;
+    
+        const loginUser = {
+            username: 'testUserValid',
+            password: 'password123',
+        }
+
+        const loginResponse = await api
+        .post('/api/login')
+        .send(loginUser)
+        .expect(200)
+        .expect('Content-Type', /application\/json/);    
+    const token = loginResponse.body.token;
     return token;
 }
 

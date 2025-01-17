@@ -24,15 +24,7 @@ usersRouter.post('/', async (request, response, next) => {
     })
 
     const savedUser = await user.save()
-
-    const userForToken = {
-      username: savedUser.username,
-      id: savedUser._id,
-    };
-    const token = jwt.sign(userForToken, process.env.SECRET);
-
     response.status(201).send({
-      token,
       username: savedUser.username,
       name: savedUser.name,
     });
