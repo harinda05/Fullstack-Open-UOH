@@ -107,6 +107,40 @@ describe('Blog app', () => {
         await page.click(`.blog:has-text("${test_title}") button:has-text("delete")`);
         await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeHidden();
     })
+
+    test('delete button is visible to the user who created the blog only', async ({ page }) => {
+        await page.fill('input[name="Username"]', 'testuser');
+        await page.fill('input[name="Password"]', 'testpassword');
+        await page.click('button[type="submit"]');
+
+        await expect(page.getByText('Test User logged-in')).toBeVisible();
+
+        await page.click('button#togglebutton');
+
+        const test_title = 'Test Blog Title' + getRandomNumber()
+
+        await page.fill('input#title', test_title);
+        await page.fill('input#author', 'Test Author');
+        await page.fill('input#url', 'http://testblog.com');
+        await page.click('button[type="submit"]');
+
+
+        await expect(page.getByText(`a new blog ${test_title} added`)).toBeVisible();
+        await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeVisible();
+        await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
+        const deleteButton = await page.locator(`.blog:has-text("${test_title}") button:has-text("delete")`);
+        await expect(deleteButton).toBeVisible();
+
+        await page.click('button:has-text("logout")');
+        await page.fill('input[name="Username"]', 'sam');
+        await page.fill('input[name="Password"]', '789');
+        await page.click('button[type="submit"]');
+
+        await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
+        await expect(deleteButton).not.toBeVisible();
+
+
+    })
 })
 
 
