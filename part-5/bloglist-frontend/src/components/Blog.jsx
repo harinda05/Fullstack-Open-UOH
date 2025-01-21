@@ -1,7 +1,7 @@
 
 import BlogDetails from './BlogDetails';
 
-const Blog = ({ blog }) => {
+const Blog = ({user, blog }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -15,7 +15,7 @@ const Blog = ({ blog }) => {
     
     <div style={blogStyle}>
       {blog.title} {blog.author}
-      <BlogDetails blog={blog} />
+      <BlogDetails blog={blog} user={user} />
     </div>
   )
 }
