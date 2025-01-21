@@ -1,7 +1,10 @@
+import { useRef } from 'react'
+
 import BlogDetails from './BlogDetails';
+import Togglable from './Togglable';
 
 const Blog = ({user, blog, setBlogs }) => {
-
+  const blogEntryRef = useRef()
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -16,9 +19,10 @@ const Blog = ({user, blog, setBlogs }) => {
 
   return (
     
-    <div style={blogStyle}>
+    <div style={blogStyle} class={'blog'}>
       {blog.title} {blog.author}
-      <BlogDetails blog={blog} user={user} onDelete={handleDelete} />
+      <Togglable buttonLabel="view" ref={blogEntryRef}>
+      <BlogDetails blog={blog} user={user} onDelete={handleDelete} /> </Togglable>
     </div>
   )
 }

@@ -26,7 +26,7 @@ const BlogDetails = ({ blog, user, onDelete }) => {
     };
 
     return (
-        <Togglable buttonLabel="view">
+       
             <div>
                 <p><a href={blog.url}>{blog.url}</a></p>
                 <p>{likes} <button onClick={handleLike}>like</button></p>
@@ -36,7 +36,6 @@ const BlogDetails = ({ blog, user, onDelete }) => {
                     <p><button onClick={handleDelete}>delete</button></p>
                 )}
             </div>
-        </Togglable>
     );
 }
 
