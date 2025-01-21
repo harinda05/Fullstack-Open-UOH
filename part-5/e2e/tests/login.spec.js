@@ -2,12 +2,20 @@ const { test, expect, beforeEach, describe } = require('@playwright/test')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
-        await request.delete('http://localhost:5173/api/users');
+        await request.post('http://localhost:5173/api/testing/reset');
         await request.post('http://localhost:5173/api/users', {
             data: {
                 username: 'testuser',
                 password: 'testpassword',
                 name: "Test User"
+            }
+        });
+
+        await request.post('http://localhost:5173/api/users', {
+            data: {
+                username: 'sam',
+                password: '789',
+                name: "Sam"
             }
         });
 
@@ -108,7 +116,7 @@ describe('Blog app', () => {
         await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeHidden();
     })
 
-    test('delete button is visible to the user who created the blog only', async ({ page }) => {
+    test('assert sorting based on likes', async ({ page }) => {
         await page.fill('input[name="Username"]', 'testuser');
         await page.fill('input[name="Password"]', 'testpassword');
         await page.click('button[type="submit"]');
@@ -117,29 +125,51 @@ describe('Blog app', () => {
 
         await page.click('button#togglebutton');
 
-        const test_title = 'Test Blog Title' + getRandomNumber()
+        await page.fill('input#title', 'Unique Blog One'); 
+        await page.fill('input#author', 'Author One'); 
+        await page.fill('input#url', 'http://unique-blogone.com'); 
+        await page.click('button[type="submit"]'); 
 
-        await page.fill('input#title', test_title);
-        await page.fill('input#author', 'Test Author');
-        await page.fill('input#url', 'http://testblog.com');
-        await page.click('button[type="submit"]');
+        await page.fill('input#title', 'Unique Blog Two'); 
+        await page.fill('input#author', 'Author Two'); 
+        await page.fill('input#url', 'http://unique-blogtwo.com'); 
+        await page.click('button[type="submit"]'); 
 
-
-        await expect(page.getByText(`a new blog ${test_title} added`)).toBeVisible();
-        await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeVisible();
-        await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
-        const deleteButton = await page.locator(`.blog:has-text("${test_title}") button:has-text("delete")`);
-        await expect(deleteButton).toBeVisible();
-
-        await page.click('button:has-text("logout")');
-        await page.fill('input[name="Username"]', 'sam');
-        await page.fill('input[name="Password"]', '789');
-        await page.click('button[type="submit"]');
-
-        await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
-        await expect(deleteButton).not.toBeVisible();
+        await page.fill('input#title', 'Unique Blog Three'); 
+        await page.fill('input#author', 'Author Three'); 
+        await page.fill('input#url', 'http://unique-blogthree.com'); 
+        await page.click('button[type="submit"]'); 
 
 
+        await page.click(`.blog:has-text("Unique Blog Two") button:has-text("view")`);
+        await page.click(`.blog:has-text("Unique Blog Two") button:has-text("like")`);
+        await page.waitForTimeout(500);
+        await page.click(`.blog:has-text("Unique Blog Two") button:has-text("like")`);
+        await page.waitForTimeout(500);
+        // two likes
+
+        await page.click(`.blog:has-text("Unique Blog One") button:has-text("view")`);
+        await page.click(`.blog:has-text("Unique Blog One") button:has-text("like")`);
+        await page.waitForTimeout(500);
+        // one like
+
+        await page.reload();
+
+        await page.click(`.blog:has-text("Unique Blog One") button:has-text("view")`);
+        await page.click(`.blog:has-text("Unique Blog Two") button:has-text("view")`);
+        await page.click(`.blog:has-text("Unique Blog Three") button:has-text("view")`);
+        await page.waitForTimeout(500);
+
+        const blogTitles = await page.$$eval('.blog', blogs => 
+            blogs.map(blog => {
+                const text = blog.textContent.trim();
+                return text.split(' ').slice(0, 3).join(' ');
+            })
+        );
+
+        const expectedOrder = ['Unique Blog Two', 'Unique Blog One', 'Unique Blog Three'];
+
+        expect(blogTitles).toEqual(expectedOrder);
     })
 })
 
