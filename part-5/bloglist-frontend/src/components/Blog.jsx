@@ -19,7 +19,7 @@ const Blog = ({user, blog, setBlogs }) => {
 
   return (
     
-    <div style={blogStyle} class={'blog'}>
+    <div style={blogStyle} class={'blog'} id={blog.id}>
       {blog.title} {blog.author}
       <Togglable buttonLabel="view" ref={blogEntryRef}>
       <BlogDetails blog={blog} user={user} onDelete={handleDelete} /> </Togglable>
