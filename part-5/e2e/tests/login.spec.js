@@ -78,11 +78,38 @@ describe('Blog app', () => {
         await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeVisible();
         await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
         await page.click(`.blog:has-text("${test_title}") button:has-text("like")`);
-        await expect(page.locator(`.blog:has-text("${test_title}")`).getByText('1 like')).toBeVisible();    })
+        await expect(page.locator(`.blog:has-text("${test_title}")`).getByText('1 like')).toBeVisible();
+    })
 
+    test('a blog can be deleted by the user who created it', async ({ page }) => {
+        await page.fill('input[name="Username"]', 'testuser');
+        await page.fill('input[name="Password"]', 'testpassword');
+        await page.click('button[type="submit"]');
+
+        await expect(page.getByText('Test User logged-in')).toBeVisible();
+
+        await page.click('button#togglebutton');
+
+        const test_title = 'Test Blog Title' + getRandomNumber()
+
+        await page.fill('input#title', test_title);
+        await page.fill('input#author', 'Test Author');
+        await page.fill('input#url', 'http://testblog.com');
+        await page.click('button[type="submit"]');
+
+
+        await expect(page.getByText(`a new blog ${test_title} added`)).toBeVisible();
+        await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeVisible();
+        await page.click(`.blog:has-text("${test_title}") button:has-text("view")`);
+        page.on('dialog', async dialog => {
+            await dialog.accept();
+        });
+        await page.click(`.blog:has-text("${test_title}") button:has-text("delete")`);
+        await expect(page.locator(`.blog:has-text("${test_title}")`)).toBeHidden();
+    })
 })
 
 
 const getRandomNumber = () => {
-    return Math.floor(Math.random() * 100) + 1;
+    return Math.floor(Math.random() * 99999999) + 1;
 }
