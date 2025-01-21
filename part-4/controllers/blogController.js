@@ -38,12 +38,12 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
       likes: likes !== undefined ? likes : 0,
       user: user._id
     })
-    const savedBlog = await blog.save()
+    const savedBlog = await blog.save();
 
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-    
-    res.status(201).json(savedBlog)
+    console.log(await savedBlog.populate('user', '-blogs'))
+    res.status(201).json(await savedBlog.populate('user', '-blogs'))
   } catch (error) {
     next(error);
   }
@@ -78,7 +78,7 @@ blogsRouter.delete('/:id',userExtractor, async (req, res) => {
 });
 
 // PUT /api/blogs/:id
-blogsRouter.put('/:id', async (req, res) => {
+blogsRouter.put('/:id', userExtractor, async (req, res) => {
   const { id } = req.params;
   const { likes } = req.body;
 

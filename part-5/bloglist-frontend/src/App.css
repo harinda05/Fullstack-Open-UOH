@@ -1,0 +1,19 @@
+.successMsg {
+    color: green;
+    background: rgb(211, 211, 211);
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .failure {
+    color: red;
+    background: rgb(211, 211, 211);
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
