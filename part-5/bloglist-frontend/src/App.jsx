@@ -5,6 +5,7 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
 
 import './App.css'
 
@@ -45,30 +46,15 @@ const App = () => {
   }, [])
 
   const loginForm = () => {
-    return <div>
-        <h2>log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-              <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-              <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+    return (
+      <LoginForm 
+        username={username} 
+        setUsername={setUsername} 
+        password={password} 
+        setPassword={setPassword} 
+        handleLogin={handleLogin} 
+      />
+    )
   }
   
 
