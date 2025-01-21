@@ -1,7 +1,6 @@
-
 import BlogDetails from './BlogDetails';
 
-const Blog = ({user, blog }) => {
+const Blog = ({user, blog, setBlogs }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -11,11 +10,15 @@ const Blog = ({user, blog }) => {
     marginBottom: 5
   }
 
+  const handleDelete = (id) => {
+    setBlogs((prevBlogs) => prevBlogs.filter((b) => b.id !== id));
+  };
+
   return (
     
     <div style={blogStyle}>
       {blog.title} {blog.author}
-      <BlogDetails blog={blog} user={user} />
+      <BlogDetails blog={blog} user={user} onDelete={handleDelete} />
     </div>
   )
 }

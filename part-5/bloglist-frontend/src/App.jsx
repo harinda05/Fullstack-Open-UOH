@@ -112,9 +112,11 @@ return (
           {user && <BlogForm user={user} setBlogs={setBlogs} setNotificationMessage={setNotificationMessage} />}
         </Togglable>
         <h2>blogs</h2>
-        {blogs.map(blog =>
-          <Blog user={user} key={blog.id} blog={blog} />
-        )}
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog user={user} key={blog.id} blog={blog} setBlogs={setBlogs}/>
+          ))}
       </div>
     }
 

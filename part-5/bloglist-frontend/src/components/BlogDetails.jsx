@@ -2,7 +2,7 @@ import Togglable from './Togglable';
 import blogsService from '../services/blogs';
 import { useState } from 'react';
 
-const BlogDetails = ({ blog, user }) => {
+const BlogDetails = ({ blog, user, onDelete }) => {
     const [likes, setLikes] = useState(blog.likes);
 
     const handleLike = async () => {
@@ -14,12 +14,27 @@ const BlogDetails = ({ blog, user }) => {
         }
     };
 
+    const handleDelete = async () => {
+        if (window.confirm(`Are you sure you want to delete "${blog.title}"?`)) {
+            try {
+                await blogsService.deleteBlog(blog.id, user.token);
+                onDelete(blog.id);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
+
     return (
         <Togglable buttonLabel="view">
             <div>
                 <p><a href={blog.url}>{blog.url}</a></p>
                 <p>{likes} <button onClick={handleLike}>like</button></p>
                 <p>{blog.user.name}</p>
+                {console.log(`blog.user.id: ${blog.user.username}, userId: ${user.username}`)}
+                {user.username === blog.user.username && (
+                    <p><button onClick={handleDelete}>delete</button></p>
+                )}
             </div>
         </Togglable>
     );
